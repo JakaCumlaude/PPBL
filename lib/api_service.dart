@@ -3,8 +3,7 @@ import 'package:http/http.dart' as http;
 import 'models/project_model.dart';
 
 class ApiService {
-  static const String baseUrl =
-      "https://695eb0f22556fd22f679226c.mockapi.io";
+  static const String baseUrl = "https://695eb0f22556fd22f679226c.mockapi.io";
 
   /* =======================
      PROJECT
@@ -13,8 +12,7 @@ class ApiService {
   // GET Projects
   static Future<List<Project>> fetchProjects() async {
     try {
-      final response =
-          await http.get(Uri.parse("$baseUrl/projects"));
+      final response = await http.get(Uri.parse("$baseUrl/projects"));
 
       if (response.statusCode == 200) {
         final List data = jsonDecode(response.body);
@@ -32,8 +30,7 @@ class ApiService {
   ======================== */
 
   // POST Donation
-  static Future<bool> postDonation(
-      Map<String, dynamic> data) async {
+  static Future<bool> postDonation(Map<String, dynamic> data) async {
     try {
       final response = await http.post(
         Uri.parse("$baseUrl/donations"),
@@ -52,8 +49,7 @@ class ApiService {
 
   // GET generic
   static Future<List<dynamic>> getData(String endpoint) async {
-    final response =
-        await http.get(Uri.parse("$baseUrl/$endpoint"));
+    final response = await http.get(Uri.parse("$baseUrl/$endpoint"));
     return jsonDecode(response.body);
   }
 
@@ -68,12 +64,21 @@ class ApiService {
   }
 
   // PUT generic
-  static Future<void> putData(
+  static Future<bool> putData(
       String endpoint, String id, Map<String, dynamic> data) async {
-    await http.put(
+    final response = await http.put(
       Uri.parse("$baseUrl/$endpoint/$id"),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode(data),
+    );
+
+    return response.statusCode == 200;
+  }
+
+  // DELETE generic
+  static Future<void> deleteData(String endpoint, String id) async {
+    await http.delete(
+      Uri.parse("$baseUrl/$endpoint/$id"),
     );
   }
 }

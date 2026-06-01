@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:tangankebaikan/screens/home/splash_screen.dart';
 import 'package:tangankebaikan/screens/auth/login_screen.dart';
 import 'package:tangankebaikan/screens/auth/register_screen.dart';
-import 'package:tangankebaikan/screens/volunteer/volunteer_detail_page.dart';
 import 'package:tangankebaikan/screens/volunteer/volunteer_registration_page.dart';
 import 'package:tangankebaikan/screens/volunteer/volunteer_list_page.dart';
 import 'package:tangankebaikan/screens/registration_history_page.dart';
@@ -10,6 +9,7 @@ import 'package:tangankebaikan/screens/project/project_list_screen.dart';
 import 'package:tangankebaikan/screens/project/project_detail_screen.dart';
 import 'package:tangankebaikan/screens/project/donation_form_screen.dart';
 import 'screens/home/donatur_home_page.dart';
+
 void main() {
   runApp(const TanganKebaikanApp());
 }
@@ -35,7 +35,8 @@ class TanganKebaikanApp extends StatelessWidget {
         '/login': (context) => const LoginScreen(),
         '/register': (context) => const RegisterScreen(),
         '/volunteer-list': (context) => const VolunteerListPage(),
-        '/volunteer-registration': (context) => const VolunteerRegistrationPage(),
+        '/volunteer-registration': (context) =>
+            const VolunteerRegistrationPage(),
         '/registration-history': (context) => const RegistrationHistoryPage(),
         '/projects': (_) => const ProjectListScreen(),
         '/project-detail': (_) => const ProjectDetailScreen(),
