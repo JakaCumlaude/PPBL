@@ -6,6 +6,10 @@ import '../project/project_list_screen.dart';
 import '../gallery/gallery_hub_page.dart';
 import '../volunteer/volunteer_list_page.dart';
 import '../profile/profile_page.dart';
+import '../../widgets/home_banner.dart';
+import '../../widgets/project_card.dart';
+import '../../widgets/quick_menu.dart';
+import '../../widgets/donation_progress_card.dart';
 
 enum MenuTab { home, gallery, project, volunteer, profile }
 
@@ -68,46 +72,118 @@ class _HomePageState extends State<HomePage> {
       slivers: [
         SliverAppBar(
           pinned: true,
-          expandedHeight: 100,
+          expandedHeight: 120,
           backgroundColor: primaryBlue,
-          flexibleSpace: FlexibleSpaceBar(
-            title: Text(_showGreeting ? "Halo, Pahlawan!" : "Tangan Kebaikan"),
+          flexibleSpace: const FlexibleSpaceBar(
+            title: Text("Tangan Kebaikan"),
+            centerTitle: false,
           ),
         ),
 
-        // Statistik
+        // ===== BANNER =====
+        SliverToBoxAdapter(
+          child: const HomeBanner(),
+        ),
+
+        // ===== STATISTIK =====
         SliverToBoxAdapter(
           child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: _buildSummaryStats(),
-          ),
-        ),
-
-        const SliverToBoxAdapter(
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16),
-            child: Text(
-              "Proyek Bantuan",
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Container(
+              padding: const EdgeInsets.symmetric(
+                vertical: 18,
+                horizontal: 12,
+              ),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black12,
+                    blurRadius: 8,
+                    offset: Offset(0, 3),
+                  )
+                ],
+              ),
+              child: _buildSummaryStats(),
             ),
           ),
         ),
 
-        // Grid Proyek
+        const SliverToBoxAdapter(
+          child: SizedBox(height: 20),
+        ),
+
+        // ===== MENU CEPAT =====
+        SliverToBoxAdapter(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                QuickMenu(
+                  icon: Icons.favorite,
+                  title: "Donasi",
+                  onTap: () {},
+                ),
+                QuickMenu(
+                  icon: Icons.volunteer_activism,
+                  title: "Volunteer",
+                  onTap: () {},
+                ),
+                QuickMenu(
+                  icon: Icons.photo_library,
+                  title: "Galeri",
+                  onTap: () {},
+                ),
+                QuickMenu(
+                  icon: Icons.person,
+                  title: "Profil",
+                  onTap: () {},
+                ),
+              ],
+            ),
+          ),
+        ),
+
+        const SliverToBoxAdapter(
+          child: SizedBox(height: 24),
+        ),
+
+        // ===== JUDUL PROJECT =====
+        const SliverToBoxAdapter(
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16),
+            child: Text(
+              "Proyek Bantuan Terbaru",
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ),
+
+        const SliverToBoxAdapter(
+          child: SizedBox(height: 12),
+        ),
+
         _buildProjectGrid(),
 
-        const SliverToBoxAdapter(child: SizedBox(height: 20)),
+        const SliverToBoxAdapter(
+          child: SizedBox(height: 30),
+        ),
       ],
     );
   }
 
   Widget _buildSummaryStats() {
-    return Row(
+    return const Row(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
-      children: const [
-        _StatItem("Rp 150M+", "Donasi"),
+      children: [
+        _StatItem("Rp150M+", "Donasi"),
         _StatItem("1.240", "Proyek"),
-        _StatItem("45rb", "Donatur"),
+        _StatItem("45rb+", "Donatur"),
       ],
     );
   }
@@ -134,12 +210,19 @@ class _HomePageState extends State<HomePage> {
           padding: const EdgeInsets.all(16),
           sliver: SliverGrid(
             delegate: SliverChildBuilderDelegate(
-              (context, index) =>
-                  _buildProjectCard(projects[index]),
+              (context, index) => ProjectCard(
+                project: projects[index],
+                onDetail: () {
+                  Navigator.pushNamed(
+                    context,
+                    '/project-detail',
+                    arguments: projects[index],
+                  );
+                },
+              ),
               childCount: projects.length,
             ),
-            gridDelegate:
-                const SliverGridDelegateWithFixedCrossAxisCount(
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 2,
               crossAxisSpacing: 12,
               mainAxisSpacing: 12,
@@ -151,57 +234,6 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _buildProjectCard(Project p) {
-    return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      clipBehavior: Clip.antiAlias,
-      child: Column(
-        children: [
-          Expanded(
-            child: Image.network(
-              p.image,
-              width: double.infinity,
-              fit: BoxFit.cover,
-              errorBuilder: (_, __, ___) =>
-                  Container(color: Colors.grey[300]),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8),
-            child: Column(
-              children: [
-                Text(
-                  p.title,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 8),
-                SizedBox(
-                  width: double.infinity,
-                  height: 30,
-                  child: ElevatedButton(
-                    onPressed: () => Navigator.pushNamed(
-                      context,
-                      '/project-detail',
-                      arguments: p,
-                    ),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: primaryBlue,
-                      padding: EdgeInsets.zero,
-                    ),
-                    child: const Text("Detail", style: TextStyle(fontSize: 11)),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget _buildBottomNavBar() {
     return BottomNavigationBar(
       currentIndex: _selectedTab.index,
@@ -210,7 +242,8 @@ class _HomePageState extends State<HomePage> {
       selectedItemColor: primaryBlue,
       items: const [
         BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Beranda'),
-        BottomNavigationBarItem(icon: Icon(Icons.photo_library), label: 'Galeri'),
+        BottomNavigationBarItem(
+            icon: Icon(Icons.photo_library), label: 'Galeri'),
         BottomNavigationBarItem(icon: Icon(Icons.list), label: 'Proyek'),
         BottomNavigationBarItem(
             icon: Icon(Icons.volunteer_activism), label: 'Volunteer'),
@@ -234,12 +267,21 @@ class _StatItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Text(value,
-            style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF4A90E2))),
-        const SizedBox(height: 4),
-        Text(label, style: const TextStyle(color: Colors.grey)),
+        Text(
+          value,
+          style: const TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: Color(0xFF4A90E2),
+          ),
+        ),
+        const SizedBox(height: 6),
+        Text(
+          label,
+          style: const TextStyle(
+            color: Colors.grey,
+          ),
+        ),
       ],
     );
   }

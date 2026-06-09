@@ -9,13 +9,31 @@ import 'package:tangankebaikan/screens/project/project_list_screen.dart';
 import 'package:tangankebaikan/screens/project/project_detail_screen.dart';
 import 'package:tangankebaikan/screens/project/donation_form_screen.dart';
 import 'screens/home/donatur_home_page.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'screens/donation/donation_history_page.dart';
+import 'screens/volunteer_local/volunteer_local_list_page.dart';
 
-void main() {
-  runApp(const TanganKebaikanApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  final prefs = await SharedPreferences.getInstance();
+
+  final isLogin = prefs.getBool('isLoggedIn') ?? false;
+
+  runApp(
+    TanganKebaikanApp(
+      isLoggedIn: isLogin,
+    ),
+  );
 }
 
 class TanganKebaikanApp extends StatelessWidget {
-  const TanganKebaikanApp({super.key});
+  final bool isLoggedIn;
+
+  const TanganKebaikanApp({
+    super.key,
+    required this.isLoggedIn,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +46,7 @@ class TanganKebaikanApp extends StatelessWidget {
         // Anda bisa menambahkan font default di sini jika ada
         // fontFamily: 'NamaFont',
       ),
-      initialRoute: '/splash',
+      initialRoute: isLoggedIn ? '/' : '/splash',
       routes: {
         '/': (context) => const HomePage(),
         '/splash': (context) => const SplashScreen(),
@@ -41,6 +59,8 @@ class TanganKebaikanApp extends StatelessWidget {
         '/projects': (_) => const ProjectListScreen(),
         '/project-detail': (_) => const ProjectDetailScreen(),
         '/donation-form': (context) => const DonationFormScreen(),
+        '/donation-history': (_) => const DonationHistoryPage(),
+        '/volunteer-local': (_) => const VolunteerLocalListPage(),
       },
     );
   }

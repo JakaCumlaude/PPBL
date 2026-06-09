@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../models/project_model.dart';
+import '../../widgets/donation_progress_card.dart';
 
 class ProjectDetailScreen extends StatelessWidget {
   const ProjectDetailScreen({super.key});
@@ -7,6 +8,9 @@ class ProjectDetailScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final p = ModalRoute.of(context)!.settings.arguments as Project;
+
+    final collected = int.tryParse(p.collected.toString()) ?? 0;
+    final target = int.tryParse(p.target.toString()) ?? 1;
 
     return Scaffold(
       appBar: AppBar(
@@ -46,44 +50,13 @@ class ProjectDetailScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 12),
 
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        "${((double.tryParse(p.collected.toString()) ?? 0) / (double.tryParse(p.target.toString()) ?? 1) * 100).toStringAsFixed(0)}%",
-                        style: const TextStyle(
-                          color: Colors.blue,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 18,
-                        ),
-                      ),
-                      const Text("Tercapai",
-                          style: TextStyle(color: Colors.grey)),
-                    ],
+                  // ✅ DonationProgressCard — CustomPainter + gesture onLongPress
+                  DonationProgressCard(
+                    title: p.title,
+                    collected: collected,
+                    target: target,
+                    color: const Color(0xFF4A90E2),
                   ),
-                  const SizedBox(height: 8),
-
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(10),
-                    child: LinearProgressIndicator(
-                      value: (double.tryParse(p.collected.toString()) ?? 0) /
-                          (double.tryParse(p.target.toString()) ?? 1),
-                      minHeight: 12,
-                      backgroundColor: Colors.grey[200],
-                      valueColor:
-                          const AlwaysStoppedAnimation<Color>(Colors.blue),
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      _buildDanaInfo("Terkumpul", "Rp ${p.collected}"),
-                      _buildDanaInfo("Target", "Rp ${p.target}"),
-                    ],
-                  ),
-                  // ---------------------------------
 
                   const SizedBox(height: 30),
                   const Text(
@@ -125,27 +98,6 @@ class ProjectDetailScreen extends StatelessWidget {
           ],
         ),
       ),
-    );
-  }
-
-  Widget _buildDanaInfo(String label, String value) {
-    return Column(
-      crossAxisAlignment:
-          label == "Target" ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-      children: [
-        Text(
-          label,
-          style: const TextStyle(fontSize: 12, color: Colors.grey),
-        ),
-        Text(
-          value,
-          style: const TextStyle(
-            fontSize: 15,
-            fontWeight: FontWeight.bold,
-            color: Colors.black,
-          ),
-        ),
-      ],
     );
   }
 }
